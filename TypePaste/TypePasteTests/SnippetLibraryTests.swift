@@ -59,6 +59,21 @@ struct SnippetLibraryTests {
         #expect(assignments.last?.keyCode == Int(kVK_ANSI_9))
     }
 
+    @Test
+    func movingSnippetUpPersistsNewSequentialOrder() throws {
+        let first = Snippet(id: UUID(), title: "First", text: "1", order: 0)
+        let second = Snippet(id: UUID(), title: "Second", text: "2", order: 1)
+
+        let reordered = SnippetLibrarySettings.reordered(
+            [first, second],
+            movingID: second.id,
+            offset: -1
+        )
+
+        #expect(reordered.map(\.id) == [second.id, first.id])
+        #expect(reordered.map(\.order) == [0, 1])
+    }
+
     private func resetSnippets(in defaults: UserDefaults) {
         defaults.removeObject(forKey: SnippetLibrarySettings.snippetsKey)
     }

@@ -27,4 +27,13 @@ struct TypePasteTests {
         #expect((sanitized & UInt32(optionKey)) != 0)
         #expect((sanitized & UInt32(shiftKey)) == 0)
     }
+
+    @Test
+    func primaryHotKeyCatalogIncludesHashKeyNextToOne() throws {
+        let hashKey = try #require(
+            HotKeySettings.availableKeys.first(where: { $0.keyCode == kVK_ANSI_Grave })
+        )
+
+        #expect(hashKey.name == "#")
+    }
 }

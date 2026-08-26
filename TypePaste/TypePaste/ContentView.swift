@@ -488,14 +488,13 @@ struct ContentView: View {
 
     private func moveSelectedSnippet(offset: Int) {
         guard let selectedSnippetID else { return }
-        guard let index = snippets.firstIndex(where: { $0.id == selectedSnippetID }) else { return }
 
-        let newIndex = index + offset
-        guard snippets.indices.contains(newIndex) else { return }
-
-        let snippet = snippets.remove(at: index)
-        snippets.insert(snippet, at: newIndex)
-        persistSnippets()
+        snippets = SnippetLibrarySettings.reordered(
+            snippets,
+            movingID: selectedSnippetID,
+            offset: offset
+        )
+        SnippetLibrarySettings.save(snippets)
         self.selectedSnippetID = selectedSnippetID
     }
 

@@ -60,6 +60,25 @@ enum SnippetLibrarySettings {
                 return snippet
             }
     }
+
+    static func reordered(_ snippets: [Snippet], movingID: UUID, offset: Int) -> [Snippet] {
+        var reordered = normalized(snippets)
+        guard let index = reordered.firstIndex(where: { $0.id == movingID }) else {
+            return reordered
+        }
+
+        let newIndex = index + offset
+        guard reordered.indices.contains(newIndex) else { return reordered }
+
+        let snippet = reordered.remove(at: index)
+        reordered.insert(snippet, at: newIndex)
+
+        return reordered.enumerated().map { index, snippet in
+            var snippet = snippet
+            snippet.order = index
+            return snippet
+        }
+    }
 }
 
 struct SnippetHotKeyAssignment: Equatable {
