@@ -13,6 +13,7 @@ struct HotKeySettings {
     static let modifiersKey = "hotkey.modifiers"
 
     static let availableKeys: [HotKeyKey] = [
+        .init(name: "#", keyCode: kVK_ANSI_Grave),
         .init(name: "1", keyCode: kVK_ANSI_1),
         .init(name: "2", keyCode: kVK_ANSI_2),
         .init(name: "3", keyCode: kVK_ANSI_3),
