@@ -16,6 +16,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var hotKeyManager: HotKeyManager?
     private var hotKeyObserver: NSObjectProtocol?
     private var appliedHotKeyRegistrations: [HotKeyRegistration] = []
+    private var lastHotKeyInputs: (keyCode: Int, modifiers: Int, snippetsData: Data?)?
 
     override init() {
         self.typingActionHandler = ClipboardTyper()
@@ -56,7 +57,21 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func updateHotKeyFromSettings() {
+        // Hotkey registrations are a pure function of these three values, so an
+        // unchanged fingerprint means nothing to recompute — unrelated defaults
+        // writes (e.g. delay sliders) can return without decoding the snippet data.
+        let defaults = UserDefaults.standard
+        let inputs = (
+            keyCode: defaults.integer(forKey: HotKeySettings.keyCodeKey),
+            modifiers: defaults.integer(forKey: HotKeySettings.modifiersKey),
+            snippetsData: defaults.data(forKey: SnippetLibrarySettings.snippetsKey)
+        )
+        if let lastHotKeyInputs, lastHotKeyInputs == inputs { return }
+        lastHotKeyInputs = inputs
+
         let registrations = currentHotKeyRegistrations()
+        // A changed fingerprint can still produce identical registrations (e.g.
+        // editing a snippet's text), so skip the Carbon re-registration too.
         guard registrations != appliedHotKeyRegistrations else { return }
         appliedHotKeyRegistrations = registrations
 
