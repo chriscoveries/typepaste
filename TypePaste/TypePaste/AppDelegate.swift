@@ -15,6 +15,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private lazy var actionPerformer = TypePasteActionPerformer(typingActionHandler: typingActionHandler)
     private var hotKeyManager: HotKeyManager?
     private var hotKeyObserver: NSObjectProtocol?
+    private var appliedHotKeyRegistrations: [HotKeyRegistration] = []
 
     override init() {
         self.typingActionHandler = ClipboardTyper()
@@ -56,6 +57,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func updateHotKeyFromSettings() {
         let registrations = currentHotKeyRegistrations()
+        guard registrations != appliedHotKeyRegistrations else { return }
+        appliedHotKeyRegistrations = registrations
 
         if let hotKeyManager {
             hotKeyManager.update(registrations: registrations)
